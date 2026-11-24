@@ -1,14 +1,9 @@
 import {
-  Images,
-  ShieldCheck,
-  DollarSign,
-  RefreshCw,
+  CircleDollarSign,
+  RotateCcw,
+  ScanSearch,
+  Shapes,
 } from "lucide-react";
-
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
 
 import type { DiagramResponse } from "@/types/diagram";
 
@@ -16,9 +11,7 @@ interface StatsOverviewProps {
   diagrams: DiagramResponse[];
 }
 
-const StatsOverview = ({
-  diagrams,
-}: StatsOverviewProps) => {
+const StatsOverview = ({ diagrams }: StatsOverviewProps) => {
   const totalChecks = diagrams.reduce(
     (total, { result }) =>
       total + Object.keys(result.checks).length,
@@ -49,18 +42,21 @@ const StatsOverview = ({
     0,
   );
 
+  const checkRate = totalChecks > 0 ? passedChecks / totalChecks : 0;
+
   const stats = [
     {
       label: "Diagrams",
       value: `${diagrams.length}/5`,
       description: "Available for review",
-      icon: Images,
+      icon: Shapes,
     },
     {
       label: "Validation checks",
       value: `${passedChecks}/${totalChecks}`,
       description: "Automated checks passed",
-      icon: ShieldCheck,
+      progress: checkRate,
+      icon: ScanSearch,
     },
     {
       label: "Estimated cost",
@@ -69,40 +65,64 @@ const StatsOverview = ({
           ? `$${totalCost.toFixed(6)}`
           : "Unknown",
       description: "Paid-equivalent USD",
-      icon: DollarSign,
+      icon: CircleDollarSign,
     },
     {
       label: "Total retries",
-      value: totalRetries,
+      value: String(totalRetries),
       description: "API and validation retries",
-      icon: RefreshCw,
+      icon: RotateCcw,
     },
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {stats.map((stat) => (
-        <Card key={stat.label}>
-          <CardContent className="space-y-2 p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-muted-foreground">
-                {stat.label}
+    <section aria-label="Overview metrics">
+      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border/70 bg-border/70 shadow-[var(--shadow-soft)] sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+
+          return (
+            <div
+              key={stat.label}
+              className="group relative bg-card/80 px-5 py-5 transition-colors duration-200 hover:bg-card"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <p className="font-mono text-[11px] font-medium tracking-[0.06em] text-muted-foreground uppercase">
+                  {stat.label}
+                </p>
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-background/70 text-muted-foreground">
+                  <Icon className="size-3.5" strokeWidth={1.8} />
+                </div>
+              </div>
+
+              <p className="mt-4 font-mono text-[1.75rem] font-medium leading-none tracking-[-0.03em] text-foreground tabular-nums">
+                {stat.value}
               </p>
 
-              <stat.icon className="size-4 text-muted-foreground" />
+              <p className="mt-2 text-xs text-muted-foreground">
+                {stat.description}
+              </p>
+
+              {"progress" in stat && (
+                <div
+                  className="mt-4 h-1 w-full overflow-hidden rounded-full bg-muted/80"
+                  role="meter"
+                  aria-label="Validation checks passed"
+                  aria-valuenow={passedChecks}
+                  aria-valuemin={0}
+                  aria-valuemax={totalChecks}
+                >
+                  <div
+                    className="h-full rounded-full bg-primary/80 transition-[width] duration-500 ease-out"
+                    style={{ width: `${checkRate * 100}%` }}
+                  />
+                </div>
+              )}
             </div>
-
-            <p className="text-2xl font-semibold tracking-tight tabular-nums">
-              {stat.value}
-            </p>
-
-            <p className="text-xs text-muted-foreground">
-              {stat.description}
-            </p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+          );
+        })}
+      </div>
+    </section>
   );
 };
 

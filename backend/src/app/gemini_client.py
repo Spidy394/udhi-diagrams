@@ -18,6 +18,9 @@ from app.schemas import Concept, GenerationResponse
 
 logger = logging.getLogger(__name__)
 
+PREFLIGHT_PROMPT = "Reply with OK."
+
+
 class GenerationError(Exception):
     def __init__(
         self,
@@ -109,6 +112,100 @@ def extract_svg(text: str) -> str:
 
     return match.group(1).strip() if match else text
 
+def configured_models() -> list[str]:
+    models = [GEMINI_MODEL]
+    models.extend(
+        model for model in GEMINI_FALLBACK_MODELS if model != GEMINI_MODEL
+    )
+    return models
+
+
+def preflight_models() -> list[str]:
+    """Return configured models that are able to generate content.
+
+    A short smoke request is made against each configured model so that a
+    missing, unsupported or temporarily unavailable model fails before any
+    diagram generation work starts.
+    """
+
+    if not GEMINI_API_KEY:
+        raise GenerationError("Gemini API key is not configured.")
+
+    models = configured_models()
+    healthy: list[str] = []
+    failures: dict[str, tuple[str, int | None]] = {}
+
+    with genai.Client(
+        api_key=GEMINI_API_KEY,
+        http_options=types.HttpOptions(
+            timeout=60_000,
+            retry_options=types.HttpRetryOptions(
+                attempts=1,
+            ),
+        ),
+    ) as client:
+
+        try:
+            available = {
+                model.name.removeprefix("models/"): (
+                    model.supported_actions or []
+                )
+                for model in client.models.list()
+            }
+        except errors.APIError as exc:
+            raise GenerationError(
+                f"Gemini model preflight failed (HTTP {exc.code}).",
+                status_code=exc.code,
+            ) from exc
+
+        for model in models:
+            actions = available.get(model)
+
+            if actions is None:
+                failures[model] = ("not found", None)
+                continue
+
+            if "generateContent" not in actions:
+                failures[model] = ("does not support generateContent", None)
+                continue
+
+            try:
+                client.models.generate_content(
+                    model=model,
+                    contents=PREFLIGHT_PROMPT,
+                    config=types.GenerateContentConfig(
+                        max_output_tokens=1,
+                    ),
+                )
+            except errors.APIError as exc:
+                failures[model] = (f"HTTP {exc.code}", exc.code)
+                continue
+
+            healthy.append(model)
+
+    if not healthy:
+        details = ", ".join(
+            f"{model} ({reason})" for model, (reason, _) in failures.items()
+        )
+
+        status_codes = {
+            code for _, code in failures.values() if code is not None
+        }
+
+        raise GenerationError(
+            "No configured Gemini model passed preflight: " + details,
+            status_code=next(iter(status_codes)) if len(status_codes) == 1 else None,
+        )
+
+    for model in healthy:
+        logger.info("Preflight passed for model %s.", model)
+
+    for model, (reason, _) in failures.items():
+        logger.warning("Preflight skipped model %s: %s.", model, reason)
+
+    return healthy
+
+
 def calculate_cost(
     model: str,
     input_tokens: int | None,
@@ -132,6 +229,7 @@ def calculate_cost(
 def generate_svg(
     concept: Concept,
     feedback: str | None = None,
+    models: list[str] | None = None,
 ) -> GenerationResponse:
 
     if not GEMINI_API_KEY:
@@ -139,10 +237,8 @@ def generate_svg(
 
     prompt = build_prompt(concept, feedback)
 
-    models = [GEMINI_MODEL]
-    models.extend(
-        model for model in GEMINI_FALLBACK_MODELS if model != GEMINI_MODEL
-    )
+    if models is None:
+        models = configured_models()
 
     total_retries = 0
 

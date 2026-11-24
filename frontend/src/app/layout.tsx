@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
 
-import { Geist } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
-const geist = Geist({
+const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -23,17 +29,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
       <body
-        className={`${geist.variable} ${geist.className} antialiased`}
+        className="min-h-dvh bg-background font-sans text-foreground antialiased"
+        suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider>
+          {children}
 
-        <Toaster
-          position="bottom-right"
-          richColors
-          closeButton
-        />
+          <Toaster
+            position="bottom-right"
+            richColors
+            closeButton
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

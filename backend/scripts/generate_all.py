@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from app.concepts import CONCEPTS
-from app.gemini_client import GenerationError
+from app.gemini_client import GenerationError, preflight_models
 from app.pipeline import generate_diagram
 from app.store import load_results, save_result
 
@@ -21,8 +21,9 @@ def main(force: bool = False) -> int:
         for result in load_results()
     }
 
-    for concept in CONCEPTS:
+    pending = []
 
+    for concept in CONCEPTS:
         existing = existing_results.get(concept.id)
 
         if existing and existing.passed and not force:
@@ -32,32 +33,51 @@ def main(force: bool = False) -> int:
             )
             continue
 
-        logger.info(
-            "Generating [%s/5] %s",
-            concept.id,
-            concept.name,
-        )
+        pending.append(concept)
 
+    if not pending:
+        logger.info("Nothing to generate.")
+    else:
         try:
-            result = generate_diagram(concept)
-
+            models = preflight_models()
         except GenerationError as exc:
-            logger.error(
-                "Generation failed for %s: %s",
-                concept.name,
-                exc,
-            )
-            continue
-
-        save_result(result)
+            logger.error("Preflight failed: %s", exc)
+            return 1
 
         logger.info(
-            "Saved %s | Passed: %s | Cost: %s | Retries: %s",
-            concept.name,
-            result.passed,
-            result.estimated_cost_usd,
-            result.retries,
+            "Preflight passed. Using models: %s",
+            ", ".join(models),
         )
+
+        for concept in pending:
+            logger.info(
+                "Generating [%s/5] %s",
+                concept.id,
+                concept.name,
+            )
+
+            try:
+                result = generate_diagram(
+                    concept,
+                    models=models,
+                )
+            except GenerationError as exc:
+                logger.error(
+                    "Generation failed for %s: %s",
+                    concept.name,
+                    exc,
+                )
+                continue
+
+            save_result(result)
+
+            logger.info(
+                "Saved %s | Passed: %s | Cost: %s | Retries: %s",
+                concept.name,
+                result.passed,
+                result.estimated_cost_usd,
+                result.retries,
+            )
 
     results = load_results()
 

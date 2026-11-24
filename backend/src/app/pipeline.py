@@ -21,7 +21,10 @@ def add_usage(
 
     return current + new
 
-def generate_diagram(concept: Concept) -> DiagramResult:
+def generate_diagram(
+    concept: Concept,
+    models: list[str] | None = None,
+) -> DiagramResult:
     feedback: str | None = None
 
     total_input_tokens: int | None = 0
@@ -41,6 +44,7 @@ def generate_diagram(concept: Concept) -> DiagramResult:
         generation = generate_svg(
             concept=concept,
             feedback=feedback,
+            models=models,
         )
 
         total_input_tokens = add_usage(

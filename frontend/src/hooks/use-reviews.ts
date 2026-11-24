@@ -29,30 +29,50 @@ export function useReviews() {
   );
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+    let active = true;
 
-      if (stored) {
-        setReviews(JSON.parse(stored));
+    void Promise.resolve().then(() => {
+      if (!active) return;
+
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+
+        if (stored) {
+          setReviews(JSON.parse(stored));
+        }
+      } catch {
+        setStorageError("Unable to load saved reviews.");
+      } finally {
+        if (active) setHydrated(true);
       }
-    } catch {
-      setStorageError("Unable to load saved reviews.");
-    } finally {
-      setHydrated(true);
-    }
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
 
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(reviews),
-      );
-    } catch {
-      setStorageError("Unable to persist reviews.");
-    }
+    let active = true;
+
+    void Promise.resolve().then(() => {
+      if (!active) return;
+
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(reviews),
+        );
+      } catch {
+        setStorageError("Unable to persist reviews.");
+      }
+    });
+
+    return () => {
+      active = false;
+    };
   }, [reviews, hydrated]);
 
   function getReview(

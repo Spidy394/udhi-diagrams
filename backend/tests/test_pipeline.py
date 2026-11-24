@@ -69,3 +69,32 @@ def test_validation_retry():
 
     assert "within_viewbox" in feedback
     assert "Rectangle exceeds the viewBox" in feedback
+
+
+def test_preflighted_models_are_forwarded():
+    response = GenerationResponse(
+        model="preflighted-model",
+        svg="<svg/>",
+        input_tokens=10,
+        output_tokens=10,
+        estimated_cost_usd=0.001,
+    )
+
+    with (
+        patch(
+            "app.pipeline.generate_svg",
+            return_value=response,
+        ) as mock_generate,
+        patch(
+            "app.pipeline.run_checks",
+            return_value=VALID_CHECKS,
+        ),
+    ):
+        generate_diagram(
+            CONCEPTS[0],
+            models=["preflighted-model"],
+        )
+
+    assert mock_generate.call_args.kwargs["models"] == [
+        "preflighted-model"
+    ]
