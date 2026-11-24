@@ -44,3 +44,13 @@ class DiagramResult(BaseModel):
         return len(self.check) == 5 and all(
             check.passed for check in self.check.values()
         )
+
+class GenerationResponse(BaseModel):
+    model: str
+    svg: str
+
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    estimated_cost_usd: float | None = None
+
+    api_retries: int = 0
