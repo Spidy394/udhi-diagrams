@@ -1,7 +1,11 @@
+import math
 import re
 import xml.etree.ElementTree as ET
 
 from app.schemas import CheckName, CheckResult
+
+from defusedxml import ElementTree as SafeET
+from defusedxml.common import DefusedXmlException
 
 SVG_NS = "http://www.w3.org/2000/svg"
 
@@ -45,9 +49,25 @@ def _local_name(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
 
-def _parse_svg(svg: str) -> tuple[ET.Element | None, str | None]:
+def _parse_svg(
+    svg: str,
+) -> tuple[ET.Element | None, str | None]:
+
+    if len(svg.encode("utf-8")) > 250_000:
+        return None, "SVG exceeds the 250 KB size limit."
+
     try:
-        return ET.fromstring(svg), None
+        root = SafeET.fromstring(
+            svg,
+            forbid_dtd=True,
+            forbid_entities=True,
+            forbid_external=True,
+        )
+
+        return root, None
+
+    except DefusedXmlException as exc:
+        return None, f"Invalid or unsafe SVG: {exc}"
     except ET.ParseError as exc:
         return None, f"SVG is not well-formed XML: {exc}"
 
@@ -93,18 +113,31 @@ def _viewbox(root: ET.Element) -> tuple[list[float] | None, str | None]:
     except ValueError:
         return None, "viewBox contains non-numeric values."
 
+    if not all(math.isfinite(value) for value in box):
+        return None, "viewBox contains non-finite values."
+
     if box[2] <= 0 or box[3] <= 0:
         return None, "viewBox width and height must be positive."
 
     return box, None
 
 
-def _number(raw: str | None, default: float | None = None) -> float | None:
+def _number(
+    raw: str | None,
+    default: float | None = None,
+) -> float | None:
+
     if raw is None:
         return default
 
     try:
-        return float(raw)
+        value = float(raw)
+
+        if not math.isfinite(value):
+            return None
+
+        return value
+
     except ValueError:
         return None
 

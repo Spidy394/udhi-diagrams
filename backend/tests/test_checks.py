@@ -191,3 +191,34 @@ def test_format_feedback_only_lists_failed_checks():
 
     assert feedback.count("\n") == 4
     assert "valid_svg:" in feedback
+
+def test_reject_non_finite_viewbox():
+    svg = VALID_SVG.replace(
+        'viewBox="0 0 800 500"',
+        'viewBox="0 0 NaN 500"',
+    )
+
+    assert not check_within_viewbox(svg).passed
+
+
+def test_reject_non_finite_geometry():
+    svg = VALID_SVG.replace(
+        'width="780"',
+        'width="NaN"',
+    )
+
+    assert not check_within_viewbox(svg).passed
+
+
+def test_reject_xml_entities():
+    svg = """
+    <!DOCTYPE svg [
+        <!ENTITY example "unsafe content">
+    ]>
+    <svg xmlns="http://www.w3.org/2000/svg">
+        <title>&example;</title>
+    </svg>
+    """
+
+    assert not check_valid_svg(svg).passed
+    assert not check_safe_svg(svg).passed
