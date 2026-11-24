@@ -54,3 +54,7 @@ class GenerationResponse(BaseModel):
     estimated_cost_usd: float | None = None
 
     api_retries: int = 0
+
+class DiagramResponse(BaseModel):
+    concept: Concept
+    result: DiagramResult

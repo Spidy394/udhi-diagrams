@@ -1,3 +1,6 @@
+"""Development server launcher — run with: uv run python -m app._dev"""
+
+
 def main() -> None:
     import uvicorn
 
@@ -7,3 +10,7 @@ def main() -> None:
         port=8000,
         reload=True,
     )
+
+
+if __name__ == "__main__":
+    main()
