@@ -49,4 +49,7 @@ export interface Review {
   status: ReviewStatus;
   note: string;
   updatedAt: string;
+  diagramVersion: string;
 }
+
+export type Reviews = Record<number, Review>;
