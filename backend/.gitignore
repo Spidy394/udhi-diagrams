@@ -1,6 +1,24 @@
-# Environment variables
-.env
+# Python
+__pycache__/
+*.py[cod]
+.venv/
 
-# Python cache
-**/__pycache__/
-**/*.py[cod]
+# Testing and linting
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Temporary generation artifacts
+test_diagram.svg
+results.tmp
+
+# Build artifacts
+build/
+dist/
+*.egg-info/

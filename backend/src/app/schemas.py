@@ -24,9 +24,9 @@ class DiagramResult(BaseModel):
     model: str
     svg: str
 
-    check: dict[CheckName, CheckResult]
+    checks: dict[CheckName, CheckResult]
 
-    import_tokens: int | None = Field(default=None, ge=0)
+    input_tokens: int | None = Field(default=None, ge=0)
     output_tokens: int | None = Field(default=None, ge=0)
     estimated_cost_usd: float | None = Field(default=None, ge=0)
 
@@ -41,8 +41,8 @@ class DiagramResult(BaseModel):
     @computed_field
     @property
     def passed(self) -> bool:
-        return len(self.check) == 5 and all(
-            check.passed for check in self.check.values()
+        return len(self.checks) == 5 and all(
+            check.passed for check in self.checks.values()
         )
 
 class GenerationResponse(BaseModel):

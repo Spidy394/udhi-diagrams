@@ -1,18 +1,15 @@
 import logging
-
 from pathlib import Path
 
 from app.concepts import CONCEPTS
-from app.gemini_client import generate_svg
+from app.pipeline import generate_diagram
 
 
 logging.basicConfig(level=logging.INFO)
 
 
 def main():
-    concept = CONCEPTS[0]
-
-    result = generate_svg(concept)
+    result = generate_diagram(CONCEPTS[0])
 
     print(
         result.model_dump_json(
@@ -21,12 +18,15 @@ def main():
         )
     )
 
-    Path("test_diagram.svg").write_text(
-        result.svg,
-        encoding="utf-8",
-    )
+    if result.passed:
+        Path("test_diagram.svg").write_text(
+            result.svg,
+            encoding="utf-8",
+        )
 
-    print("Diagram saved to test_diagram.svg")
+        print("Validated diagram saved.")
+    else:
+        print("Diagram failed validation after retry.")
 
 
 if __name__ == "__main__":
