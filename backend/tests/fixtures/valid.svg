@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 800 500">
+
+    <title>Parts of a circle</title>
+
+    <circle cx="400" cy="250" r="100"
+            fill="#DBEAFE"
+            stroke="#2563EB"
+            stroke-width="2"/>
+
+    <circle cx="400" cy="250" r="5"
+            fill="#2563EB">
+        <animate attributeName="opacity"
+                 values="1;0.3;1"
+                 dur="2s"
+                 repeatCount="indefinite"/>
+    </circle>
+
+    <line x1="400" y1="250" x2="500" y2="250"
+          stroke="#2563EB" stroke-width="2"/>
+
+    <text x="400" y="100" font-size="20"
+          text-anchor="middle">Circle</text>
+
+    <text x="400" y="290" font-size="16"
+          text-anchor="middle">Centre</text>
+
+    <text x="450" y="230" font-size="16"
+          text-anchor="middle">Radius</text>
+
+</svg>

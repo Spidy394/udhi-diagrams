@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "defusedxml>=0.7.1",
     "fastapi[standard]>=0.165.0",
     "google-genai>=3.6.1",
     "python-dotenv>=1.2.4",
@@ -26,4 +27,8 @@ dev = [
     "pytest>=9.2.0",
     "ruff>=0.17.6",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
 

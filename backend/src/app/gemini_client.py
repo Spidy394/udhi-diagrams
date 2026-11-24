@@ -69,6 +69,16 @@ TECHNICAL REQUIREMENTS:
 - Do not use CSS, style elements or transformations.
 - Do not use scripts, event handlers, foreignObject, external resources or embedded images.
 - Do not include markdown fences or explanations.
+- Use only hex colours or named SVG colours.
+- Use plain numeric coordinates without px or percentage units.
+- Use single-line text elements without tspan.
+- Leave generous horizontal space around labels.
+- Use text-anchor="middle" where appropriate.
+- Use only values or from/to for SMIL animations.
+- Use linear interpolation.
+- Specify duration in seconds or milliseconds.
+- Do not use keyTimes, animateTransform, animateMotion, paths, gradients, markers, masks or clipPath.
+- Use the title element directly inside the root SVG.
 
 Return the raw SVG only.
 """.strip()

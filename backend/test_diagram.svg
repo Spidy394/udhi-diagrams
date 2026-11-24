@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <title>Pythagoras Theorem GCSE Mathematics</title>
+
+  <rect x="0" y="0" width="800" height="500" fill="#f8fafc" />
+
+  <text x="400" y="40" font-family="Arial" font-size="24" font-weight="bold" fill="#1e293b" text-anchor="middle">Pythagoras' Theorem: a² + b² = c²</text>
+  <text x="400" y="65" font-family="Arial" font-size="14" fill="#64748b" text-anchor="middle">For any right-angled triangle, the square of the hypotenuse equals the sum of the other squares.</text>
+
+  <g id="triangle">
+    <polygon points="120,380 320,380 320,230" fill="#e2e8f0" stroke="#475569" stroke-width="3" />
+    <rect x="300" y="360" width="20" height="20" fill="none" stroke="#475569" stroke-width="2" />
+  </g>
+
+  <g id="squares">
+    <rect x="120" y="380" width="150" height="150" fill="#fee2e2" stroke="#ef4444" stroke-width="2" transform="rotate(-90 120 380)" />
+    <rect x="320" y="230" width="150" height="150" fill="#e0e7ff" stroke="#6366f1" stroke-width="2" transform="rotate(90 320 230)" />
+    <polygon points="120,380 320,230 470,270 270,420" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+  </g>
+
+  <g id="labels">
+    <text x="220" y="405" font-family="Arial" font-size="18" fill="#ef4444" text-anchor="middle" font-weight="bold">a = 3</text>
+    <text x="220" y="455" font-family="Arial" font-size="14" fill="#ef4444" text-anchor="middle">Area = a² (9)</text>
+
+    <text x="345" y="305" font-family="Arial" font-size="18" fill="#6366f1" text-anchor="middle" font-weight="bold">b = 4</text>
+    <text x="395" y="305" font-family="Arial" font-size="14" fill="#6366f1" text-anchor="middle">Area = b² (16)</text>
+
+    <text x="290" y="290" font-family="Arial" font-size="18" fill="#3b82f6" text-anchor="middle" font-weight="bold">c = 5</text>
+    <text x="370" y="360" font-family="Arial" font-size="14" fill="#3b82f6" text-anchor="middle">Area = c² (25)</text>
+  </g>
+
+  <g id="formula-box" transform="translate(520, 150)">
+    <rect x="0" y="0" width="240" height="240" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+    <text x="120" y="40" font-family="Arial" font-size="18" font-weight="bold" fill="#1e293b" text-anchor="middle">Step-by-Step</text>
+    <text x="120" y="80" font-family="Arial" font-size="16" fill="#ef4444" text-anchor="middle">a² = 3² = 9</text>
+    <text x="120" y="120" font-family="Arial" font-size="16" fill="#6366f1" text-anchor="middle">b² = 4² = 16</text>
+    <text x="120" y="160" font-family="Arial" font-size="16" fill="#3b82f6" text-anchor="middle">9 + 16 = 25</text>
+    <text x="120" y="200" font-family="Arial" font-size="18" font-weight="bold" fill="#0f172a" text-anchor="middle">c = √25 = 5</text>
+  </g>
+
+  <g id="animated-particles">
+    <circle cx="150" cy="400" r="6" fill="#ef4444">
+      <animate attributeName="cx" values="150;200;200;150" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="cy" values="400;400;330;400" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="1;1;0;0" dur="4s" repeatCount="indefinite" />
+    </circle>
+
+    <circle cx="340" cy="250" r="6" fill="#6366f1">
+      <animate attributeName="cx" values="340;390;390;340" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="cy" values="250;250;300;250" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="1;1;0;0" dur="4s" repeatCount="indefinite" />
+    </circle>
+
+    <circle cx="200" cy="320" r="6" fill="#3b82f6">
+      <animate attributeName="cx" values="200;350;350;200" dur="4s" begin="2s" repeatCount="indefinite" />
+      <animate attributeName="cy" values="320;360;360;320" dur="4s" begin="2s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0;1;1;0" dur="4s" begin="2s" repeatCount="indefinite" />
+    </circle>
+  </g>
+
+  <text x="400" y="470" font-family="Arial" font-size="14" fill="#475569" text-anchor="middle">The sum of the smaller areas (red + indigo) equals the large hypotenuse area (blue).</text>
+</svg>

@@ -1,6 +1,3 @@
-"""Development server launcher — invoked by `uv run dev`."""
-
-
 def main() -> None:
     import uvicorn
 
