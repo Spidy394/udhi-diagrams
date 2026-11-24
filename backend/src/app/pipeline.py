@@ -1,18 +1,14 @@
 import logging
-from typing import TypeVar
 
-from app.checks import run_checks, format_feedback
+from app.checks import format_feedback, run_checks
 from app.config import MAX_VALIDATION_RETRIES
 from app.gemini_client import generate_svg
 from app.schemas import Concept, DiagramResult
 
-
 logger = logging.getLogger(__name__)
 
-T = TypeVar("T", int, float)
 
-
-def add_usage(
+def add_usage[T: (int, float)](
     current: T | None,
     new: T | None,
 ) -> T | None:

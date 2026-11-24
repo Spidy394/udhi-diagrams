@@ -1,10 +1,9 @@
 from unittest.mock import patch
 
+from app.checks import run_checks
 from app.concepts import CONCEPTS
 from app.pipeline import generate_diagram
-from app.schemas import GenerationResponse, CheckResult
-from app.checks import run_checks
-
+from app.schemas import CheckResult, GenerationResponse
 
 VALID_CHECKS = {
     name: CheckResult(

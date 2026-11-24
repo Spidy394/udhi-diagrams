@@ -2,10 +2,10 @@ import math
 import re
 import xml.etree.ElementTree as ET
 
-from app.schemas import CheckName, CheckResult
-
 from defusedxml import ElementTree as SafeET
 from defusedxml.common import DefusedXmlException
+
+from app.schemas import CheckName, CheckResult
 
 SVG_NS = "http://www.w3.org/2000/svg"
 

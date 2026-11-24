@@ -324,16 +324,17 @@ uv run pytest -v
 uv run ruff check .
 ```
 
-**Last verified backend run:** 33 tests passed in 0.58 seconds.
+**Last verified backend run:** 40 tests passed in 0.62 seconds.
 
 | Area | Passed tests |
 | --- | ---: |
 | SVG checks and security regressions | 26 |
-| Generation pipeline | 1 |
+| Gemini client (cost, models, usage) | 6 |
+| Generation pipeline | 2 |
 | REST API | 6 |
-| **Total** | **33** |
+| **Total** | **40** |
 
-Tests cover malformed XML, wrong namespace, static and animated coordinate overflow, missing labels/title, missing or non-repeating animations, unsafe SVG content, non-finite geometry, XML entities, correction feedback and usage aggregation, plus REST responses including simulated rate limits and service unavailability. Mocked generation tests do not consume Gemini quota.
+Tests cover malformed XML, wrong namespace, static and animated coordinate overflow, missing labels/title, missing or non-repeating animations, unsafe SVG content, non-finite geometry, XML entities, usage aggregation, correction feedback and REST responses including simulated rate limits and service unavailability. Mocked generation tests do not consume Gemini quota.
 
 A real five-concept batch run and a live generation request for States of matter were also verified. The frontend connectivity smoke test confirmed that all five saved results were fetched successfully.
 
@@ -360,6 +361,8 @@ An earlier Pythagoras smoke test also exposed a rectangle extending from `y=380`
 ### 2. Transient Gemini service failures
 
 During the States of matter batch generation, the first three API requests returned HTTP `503`. The client waited 5, 10 and 20 seconds before subsequent attempts. The fourth request succeeded and all five validation checks passed. The final result recorded three API retries.
+
+Final production testing also saw intermittent `503` and `504` responses from both the primary and fallback Gemini models. `503` uses the backoff loop; `504` falls through to the next configured model, and a clear API error is returned if none succeeds. The five saved diagrams stay accessible because live generation never mutates the committed baseline.
 
 ### 3. Validator and schema integration bugs
 
@@ -426,7 +429,7 @@ Load the deployed frontend in a private window and check that all five baseline 
 
 - **Geometry:** the current viewBox check handles supported primitive shape bounds and selected animated coordinates. It does not fully account for stroke extents, rendered text width, every animated shape extent or unsupported SVG geometry. For example, a moving circle's centre can be inside the viewBox while its radius crosses the boundary.
 - **Animation and safety:** checks target a constrained SMIL subset. A complete animation-attribute allowlist, stricter duration/value validation and broader adversarial cases would make this more robust. The safety check is not a substitute for rendering isolation.
-- **Educational correctness:** automated checks are structural and geometric; they do not prove scientific correctness, label readability, non-overlap or meaningful motion. Human review remains essential.
+- **Educational correctness:** automated checks are structural and geometric; they do not prove scientific correctness, label readability, non-overlap or meaningful motion. This is deliberate — the human review step exists to catch what structural checks cannot.
 - **Cost accounting:** reported costs are based on returned usage metadata for the displayed result. They are not a billing ledger, and usage on unsuccessful API responses may be unavailable. Partial usage when a correction request ultimately fails is not represented in a completed result.
 - **Reliability:** synchronous requests and free-tier service limits can increase live generation latency. The browser generation lock prevents duplicate clicks in one session, not requests from multiple users.
 

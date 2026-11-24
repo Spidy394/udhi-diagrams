@@ -73,7 +73,7 @@ def generate(concept_id: int):
 
         status_code = (
             exc.status_code
-            if exc.status_code in {429, 503}
+            if exc.status_code in {429, 503, 504}
             else 502
         )
 

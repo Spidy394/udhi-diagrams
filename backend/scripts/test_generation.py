@@ -4,7 +4,6 @@ from pathlib import Path
 from app.concepts import CONCEPTS
 from app.pipeline import generate_diagram
 
-
 logging.basicConfig(level=logging.INFO)
 
 

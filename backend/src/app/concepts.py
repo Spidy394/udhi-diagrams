@@ -1,5 +1,6 @@
-from app.schemas import Concept
 from textwrap import dedent
+
+from app.schemas import Concept
 
 CONCEPTS: list[Concept] = [
     Concept(

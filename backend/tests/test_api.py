@@ -2,9 +2,8 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from app.main import app
 from app.gemini_client import GenerationError
-
+from app.main import app
 
 client = TestClient(app)
 

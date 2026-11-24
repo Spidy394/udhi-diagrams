@@ -1,5 +1,7 @@
 from typing import Literal
+
 from pydantic import BaseModel, Field, computed_field
+
 
 class Concept(BaseModel):
     id: int

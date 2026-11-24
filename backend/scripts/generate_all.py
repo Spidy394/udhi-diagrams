@@ -6,7 +6,6 @@ from app.gemini_client import GenerationError, preflight_models
 from app.pipeline import generate_diagram
 from app.store import load_results, save_result
 
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s | %(name)s | %(message)s",
